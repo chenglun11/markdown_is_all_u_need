@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Toaster } from 'react-hot-toast';
 import { Upload, Globe, Sparkles } from 'lucide-react';
@@ -17,6 +17,7 @@ function App() {
   const { t } = useTranslation();
   const [activeTab, setActiveTab] = useState<Tab>('upload');
   const [refreshTrigger, setRefreshTrigger] = useState(0);
+  const previewRef = useRef<HTMLDivElement>(null);
 
   const {
     result,
@@ -29,14 +30,18 @@ function App() {
   } = useConversion();
 
   const handleConversionComplete = async (fn: () => Promise<unknown>) => {
-    await fn();
-    setRefreshTrigger((prev) => prev + 1);
+    try {
+      await fn();
+    } finally {
+      // Always refresh history, even on failure (backend may have created a record)
+      setRefreshTrigger((prev) => prev + 1);
+    }
   };
 
   const handleSelectHistoryResult = (res: ConversionResult) => {
     setResult(res);
     // Scroll to preview
-    document.getElementById('preview-section')?.scrollIntoView({ behavior: 'smooth' });
+    previewRef.current?.scrollIntoView({ behavior: 'smooth' });
   };
 
   return (
@@ -134,7 +139,7 @@ function App() {
             )}
 
             {/* Preview Section */}
-            <div id="preview-section" className="animate-fade-in">
+            <div ref={previewRef} className="animate-fade-in">
               <div className="rounded-2xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900/50 p-6">
                 <h2 className="text-lg font-semibold text-zinc-900 dark:text-white mb-4">
                   {t('preview.title')}

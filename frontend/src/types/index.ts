@@ -8,6 +8,11 @@ export interface ConversionResult {
   title?: string;
 }
 
+export interface BatchConversionResponse {
+  results: ConversionResult[];
+  errors: { filename: string; error: string }[];
+}
+
 export interface ConversionHistoryItem {
   id: string;
   filename: string;

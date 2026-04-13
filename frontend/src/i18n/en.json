@@ -60,7 +60,11 @@
     "view": "View",
     "loadMore": "Load More",
     "loading": "Loading...",
-    "total": "{{count}} records total"
+    "total": "{{count}} records total",
+    "justNow": "Just now",
+    "minutesAgo": "{{count}} min ago",
+    "hoursAgo": "{{count}} hr ago",
+    "daysAgo": "{{count}} days ago"
   },
   "batch": {
     "title": "Batch Conversion Progress",

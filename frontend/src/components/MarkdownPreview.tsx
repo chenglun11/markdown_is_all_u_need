@@ -27,7 +27,7 @@ export default function MarkdownPreview({ result }: MarkdownPreviewProps) {
       toast.success(t('preview.copied'));
       setTimeout(() => setCopied(false), 2000);
     } catch {
-      toast.error('Failed to copy');
+      toast.error(t('common.error'));
     }
   }, [result, t]);
 

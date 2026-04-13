@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Globe, Loader2, ArrowRight } from 'lucide-react';
+import toast from 'react-hot-toast';
 
 interface UrlConverterProps {
   onConvert: (url: string) => Promise<unknown>;
@@ -22,7 +23,11 @@ export default function UrlConverter({ onConvert, isConverting }: UrlConverterPr
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!url.trim() || !isValidUrl(url)) return;
+    if (!url.trim()) return;
+    if (!isValidUrl(url)) {
+      toast.error(t('url.invalidUrl'));
+      return;
+    }
     await onConvert(url);
     setUrl('');
   };

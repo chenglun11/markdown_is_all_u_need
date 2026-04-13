@@ -1,10 +1,14 @@
 import io
+import ipaddress
 import math
 import os
 import uuid
 import zipfile
 from pathlib import Path
+from urllib.parse import urlparse
 
+import aiofiles
+import anyio
 from fastapi import APIRouter, Depends, File, HTTPException, Query, UploadFile
 from fastapi.responses import StreamingResponse
 from sqlalchemy import desc
@@ -31,8 +35,46 @@ router = APIRouter()
 # ── Helpers ─────────────────────────────────────────────────────
 
 
+def _validate_extension(filename: str) -> str:
+    """Validate file extension against whitelist. Returns the extension."""
+    ext = Path(filename or "file").suffix.lower()
+    if ext not in settings.SUPPORTED_EXTENSIONS:
+        raise HTTPException(
+            status_code=400,
+            detail=f"Unsupported file format: '{ext}'. "
+                   f"Supported: {', '.join(settings.SUPPORTED_EXTENSIONS)}",
+        )
+    return ext
+
+
+def _validate_url(url: str) -> None:
+    """Validate URL to prevent SSRF attacks."""
+    try:
+        parsed = urlparse(url)
+        hostname = parsed.hostname or ""
+        # Block private/internal addresses
+        if hostname in ("localhost", "127.0.0.1", "0.0.0.0", "::1", ""):
+            raise HTTPException(status_code=400, detail="Internal URLs are not allowed")
+        try:
+            ip = ipaddress.ip_address(hostname)
+            if ip.is_private or ip.is_loopback or ip.is_reserved or ip.is_link_local:
+                raise HTTPException(status_code=400, detail="Internal/private IP addresses are not allowed")
+        except ValueError:
+            # hostname is not an IP, that's fine
+            pass
+        if parsed.scheme not in ("http", "https"):
+            raise HTTPException(status_code=400, detail="Only http/https URLs are allowed")
+    except HTTPException:
+        raise
+    except Exception:
+        raise HTTPException(status_code=400, detail="Invalid URL format")
+
+
 async def _save_upload(upload: UploadFile) -> Path:
     """Save an uploaded file to the uploads directory and return its path."""
+    # Validate extension BEFORE saving to disk
+    _validate_extension(upload.filename or "file")
+
     ext = Path(upload.filename or "file").suffix
     unique_name = f"{uuid.uuid4().hex}{ext}"
     dest = settings.UPLOAD_DIR / unique_name
@@ -45,31 +87,33 @@ async def _save_upload(upload: UploadFile) -> Path:
                    f"{settings.MAX_FILE_SIZE // (1024 * 1024)} MB.",
         )
 
-    dest.write_bytes(content)
+    # Use aiofiles to avoid blocking the event loop
+    async with aiofiles.open(dest, "wb") as f:
+        await f.write(content)
     return dest
 
 
-def _save_output(filename: str, content: str) -> Path:
+async def _save_output(filename: str, content: str) -> Path:
     """Save converted Markdown content to the outputs directory."""
     stem = Path(filename).stem
     md_name = f"{stem}_{uuid.uuid4().hex[:8]}.md"
     dest = settings.OUTPUT_DIR / md_name
-    dest.write_text(content, encoding="utf-8")
+    async with aiofiles.open(dest, "w", encoding="utf-8") as f:
+        await f.write(content)
     return dest
 
 
-def _convert_and_persist(
+async def _convert_and_persist(
     file_path: Path,
     original_filename: str,
     file_size: int,
     db: Session,
 ) -> ConversionHistory:
     """Convert a file, persist the result, and return the ORM record."""
-    result = converter.convert_file(file_path)
+    # Run synchronous MarkItDown conversion in a thread to avoid blocking
+    result = await anyio.to_thread.run_sync(lambda: converter.convert_file(file_path))
 
-    # Save markdown output
-    _save_output(original_filename, result["text_content"])
-
+    # Persist to database first, then save output file
     record = ConversionHistory(
         filename=original_filename,
         original_format=file_path.suffix.lower(),
@@ -80,6 +124,13 @@ def _convert_and_persist(
     db.add(record)
     db.commit()
     db.refresh(record)
+
+    # Save markdown output (non-critical, DB record is source of truth)
+    try:
+        await _save_output(original_filename, result["text_content"])
+    except Exception:
+        pass  # Output file is optional; content is in DB
+
     return record
 
 
@@ -98,7 +149,7 @@ async def convert_file(
 ):
     saved_path = await _save_upload(file)
     try:
-        record = _convert_and_persist(
+        record = await _convert_and_persist(
             saved_path,
             file.filename or "unknown",
             saved_path.stat().st_size,
@@ -137,7 +188,7 @@ async def convert_files(
         try:
             saved_path = await _save_upload(upload)
             try:
-                record = _convert_and_persist(
+                record = await _convert_and_persist(
                     saved_path,
                     upload.filename or "unknown",
                     saved_path.stat().st_size,
@@ -164,14 +215,17 @@ async def convert_url(
     body: URLConvertRequest,
     db: Session = Depends(get_db),
 ):
+    # Validate URL to prevent SSRF
+    _validate_url(body.url)
+
     try:
-        result = converter.convert_url(body.url)
+        result = await anyio.to_thread.run_sync(lambda: converter.convert_url(body.url))
     except ConversionError as e:
         raise HTTPException(status_code=400, detail=str(e))
 
     # Save output
     url_stem = body.url.split("/")[-1][:50] or "url_page"
-    _save_output(url_stem, result["text_content"])
+    await _save_output(url_stem, result["text_content"])
 
     record = ConversionHistory(
         filename=body.url,

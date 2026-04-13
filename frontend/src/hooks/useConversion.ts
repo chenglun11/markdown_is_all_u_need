@@ -41,22 +41,27 @@ export function useConversion() {
       });
 
       try {
-        const results = await convertFiles(files);
+        const response = await convertFiles(files);
         setBatchProgress({
           total: files.length,
-          completed: results.length,
-          failed: 0,
-          results,
-          errors: [],
+          completed: response.results.length,
+          failed: response.errors.length,
+          results: response.results,
+          errors: response.errors,
         });
-        if (results.length > 0) {
-          setResult(results[0]);
+        if (response.results.length > 0) {
+          setResult(response.results[0]);
         }
         toast.success(t('upload.success'));
-        return results;
+        return response.results;
       } catch (err: unknown) {
         const message = err instanceof Error ? err.message : t('upload.error');
         toast.error(`${t('upload.error')}: ${message}`);
+        setBatchProgress((prev) =>
+          prev
+            ? { ...prev, failed: prev.total - prev.completed, errors: [{ filename: 'batch', error: message }] }
+            : null
+        );
         throw err;
       } finally {
         setIsConverting(false);

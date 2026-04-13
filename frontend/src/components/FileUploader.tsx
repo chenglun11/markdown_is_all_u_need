@@ -2,6 +2,7 @@ import { useCallback, useState } from 'react';
 import { useDropzone } from 'react-dropzone';
 import { useTranslation } from 'react-i18next';
 import { Upload, FileUp, X, File as FileIcon, Loader2 } from 'lucide-react';
+import toast from 'react-hot-toast';
 import FormatBadge from './FormatBadge';
 
 interface FileUploaderProps {
@@ -24,7 +25,8 @@ export default function FileUploader({
     (acceptedFiles: File[]) => {
       const validFiles = acceptedFiles.filter((f) => f.size <= MAX_SIZE);
       if (validFiles.length < acceptedFiles.length) {
-        // Some files were too large - they get filtered out
+        const skipped = acceptedFiles.length - validFiles.length;
+        toast.error(t('upload.fileTooLarge') + ` (${skipped})`);
       }
 
       if (validFiles.length === 1 && selectedFiles.length === 0) {

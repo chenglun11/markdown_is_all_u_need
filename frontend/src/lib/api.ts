@@ -1,6 +1,7 @@
 import axios from 'axios';
 import type {
   ConversionResult,
+  BatchConversionResponse,
   PaginatedHistory,
   SupportedFormat,
 } from '../types';
@@ -19,10 +20,10 @@ export async function convertFile(file: File): Promise<ConversionResult> {
   return data;
 }
 
-export async function convertFiles(files: File[]): Promise<ConversionResult[]> {
+export async function convertFiles(files: File[]): Promise<BatchConversionResponse> {
   const formData = new FormData();
   files.forEach((file) => formData.append('files', file));
-  const { data } = await api.post<ConversionResult[]>('/convert/files', formData, {
+  const { data } = await api.post<BatchConversionResponse>('/convert/files', formData, {
     headers: { 'Content-Type': 'multipart/form-data' },
   });
   return data;

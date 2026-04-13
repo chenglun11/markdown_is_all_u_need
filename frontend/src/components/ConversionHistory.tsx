@@ -85,10 +85,10 @@ export default function ConversionHistory({
     const diffHours = Math.floor(diffMs / 3600000);
     const diffDays = Math.floor(diffMs / 86400000);
 
-    if (diffMins < 1) return '刚刚';
-    if (diffMins < 60) return `${diffMins} 分钟前`;
-    if (diffHours < 24) return `${diffHours} 小时前`;
-    if (diffDays < 7) return `${diffDays} 天前`;
+    if (diffMins < 1) return t('history.justNow');
+    if (diffMins < 60) return t('history.minutesAgo', { count: diffMins });
+    if (diffHours < 24) return t('history.hoursAgo', { count: diffHours });
+    if (diffDays < 7) return t('history.daysAgo', { count: diffDays });
     return date.toLocaleDateString();
   };
 
