@@ -21,17 +21,29 @@
 
 ## 🚀 快速开始
 
-### Docker 部署（推荐）
+### 方式一：服务器部署（推荐，无需克隆代码）
+
+```bash
+# 下载生产配置文件
+curl -O https://raw.githubusercontent.com/chenglun11/markdown_is_all_u_need/main/docker-compose.prod.yml
+
+# 一键启动
+docker compose -f docker-compose.prod.yml up -d
+
+# 访问 http://你的服务器IP:3000
+```
+
+### 方式二：从源码构建部署
 
 ```bash
 # 克隆项目
-git clone https://github.com/your-username/markdown_is_all_u_need.git
+git clone https://github.com/chenglun11/markdown_is_all_u_need.git
 cd markdown_is_all_u_need
 
-# 复制环境变量
+# 复制环境变量（可选，修改端口等）
 cp .env.example .env
 
-# 一键启动
+# 构建并启动
 docker compose up -d
 
 # 访问 http://localhost:3000

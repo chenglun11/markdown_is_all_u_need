@@ -1,0 +1,37 @@
+# 生产部署用 - 直接拉取预构建镜像，无需本地构建
+# 使用方式: docker compose -f docker-compose.prod.yml up -d
+
+services:
+  backend:
+    image: ghcr.io/chenglun11/markdown_is_all_u_need/backend:latest
+    container_name: markitdown-backend
+    restart: unless-stopped
+    ports:
+      - "${BACKEND_PORT:-8000}:8000"
+    volumes:
+      - uploads_data:/app/uploads
+      - outputs_data:/app/outputs
+      - db_data:/app/data
+    environment:
+      - DATABASE_URL=sqlite:///./data/markitdown.db
+      - MAX_FILE_SIZE=${MAX_FILE_SIZE:-104857600}
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8000/api/formats')"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  frontend:
+    image: ghcr.io/chenglun11/markdown_is_all_u_need/frontend:latest
+    container_name: markitdown-frontend
+    restart: unless-stopped
+    ports:
+      - "${FRONTEND_PORT:-3000}:80"
+    depends_on:
+      backend:
+        condition: service_started
+
+volumes:
+  uploads_data:
+  outputs_data:
+  db_data:
