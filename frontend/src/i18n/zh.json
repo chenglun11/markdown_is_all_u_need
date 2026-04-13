@@ -1,0 +1,97 @@
+{
+  "app": {
+    "title": "MarkItDown Studio",
+    "subtitle": "将任意文件转换为 Markdown",
+    "description": "支持 PDF、Word、Excel、PowerPoint、图片、音频、HTML 等多种格式"
+  },
+  "header": {
+    "logo": "MarkItDown Studio",
+    "theme": {
+      "dark": "深色模式",
+      "light": "浅色模式"
+    },
+    "language": {
+      "zh": "中文",
+      "en": "English"
+    }
+  },
+  "upload": {
+    "title": "上传文件",
+    "dragText": "拖拽文件到此处，或点击选择文件",
+    "dragActive": "松开以上传文件...",
+    "supportedFormats": "支持的格式",
+    "maxSize": "单个文件最大 50MB",
+    "selectFiles": "选择文件",
+    "uploading": "上传中...",
+    "converting": "转换中...",
+    "success": "转换成功",
+    "error": "转换失败",
+    "fileTooLarge": "文件大小超过 50MB 限制",
+    "batchUpload": "批量上传"
+  },
+  "url": {
+    "title": "URL 转换",
+    "placeholder": "输入网页 URL...",
+    "convert": "转换",
+    "converting": "转换中...",
+    "success": "URL 转换成功",
+    "error": "URL 转换失败",
+    "invalidUrl": "请输入有效的 URL"
+  },
+  "preview": {
+    "title": "转换结果",
+    "raw": "Markdown 源码",
+    "rendered": "渲染预览",
+    "copy": "复制",
+    "copied": "已复制",
+    "download": "下载",
+    "noContent": "暂无内容，请上传文件或输入 URL 进行转换",
+    "filename": "文件名",
+    "format": "格式",
+    "size": "大小",
+    "time": "转换时间"
+  },
+  "history": {
+    "title": "转换历史",
+    "empty": "暂无转换历史",
+    "delete": "删除",
+    "deleteConfirm": "确认删除此记录？",
+    "deleted": "记录已删除",
+    "view": "查看",
+    "loadMore": "加载更多",
+    "loading": "加载中...",
+    "total": "共 {{count}} 条记录"
+  },
+  "batch": {
+    "title": "批量转换进度",
+    "progress": "{{completed}}/{{total}} 完成",
+    "failed": "{{count}} 个失败",
+    "complete": "全部完成",
+    "processing": "处理中..."
+  },
+  "format": {
+    "pdf": "PDF",
+    "docx": "Word",
+    "xlsx": "Excel",
+    "pptx": "PPT",
+    "html": "HTML",
+    "image": "图片",
+    "audio": "音频",
+    "csv": "CSV",
+    "json": "JSON",
+    "xml": "XML",
+    "zip": "ZIP",
+    "unknown": "未知"
+  },
+  "common": {
+    "loading": "加载中...",
+    "error": "出错了",
+    "retry": "重试",
+    "cancel": "取消",
+    "confirm": "确认",
+    "close": "关闭",
+    "bytes": "B",
+    "kb": "KB",
+    "mb": "MB"
+  }
+}

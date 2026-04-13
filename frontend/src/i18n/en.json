@@ -1,0 +1,97 @@
+{
+  "app": {
+    "title": "MarkItDown Studio",
+    "subtitle": "Convert Any File to Markdown",
+    "description": "Supports PDF, Word, Excel, PowerPoint, Images, Audio, HTML and more"
+  },
+  "header": {
+    "logo": "MarkItDown Studio",
+    "theme": {
+      "dark": "Dark Mode",
+      "light": "Light Mode"
+    },
+    "language": {
+      "zh": "中文",
+      "en": "English"
+    }
+  },
+  "upload": {
+    "title": "Upload Files",
+    "dragText": "Drag & drop files here, or click to select",
+    "dragActive": "Drop files here...",
+    "supportedFormats": "Supported Formats",
+    "maxSize": "Max file size: 50MB",
+    "selectFiles": "Select Files",
+    "uploading": "Uploading...",
+    "converting": "Converting...",
+    "success": "Conversion successful",
+    "error": "Conversion failed",
+    "fileTooLarge": "File size exceeds 50MB limit",
+    "batchUpload": "Batch Upload"
+  },
+  "url": {
+    "title": "URL Conversion",
+    "placeholder": "Enter a webpage URL...",
+    "convert": "Convert",
+    "converting": "Converting...",
+    "success": "URL conversion successful",
+    "error": "URL conversion failed",
+    "invalidUrl": "Please enter a valid URL"
+  },
+  "preview": {
+    "title": "Conversion Result",
+    "raw": "Markdown Source",
+    "rendered": "Rendered Preview",
+    "copy": "Copy",
+    "copied": "Copied",
+    "download": "Download",
+    "noContent": "No content yet. Upload a file or enter a URL to convert.",
+    "filename": "Filename",
+    "format": "Format",
+    "size": "Size",
+    "time": "Converted At"
+  },
+  "history": {
+    "title": "Conversion History",
+    "empty": "No conversion history",
+    "delete": "Delete",
+    "deleteConfirm": "Confirm delete this record?",
+    "deleted": "Record deleted",
+    "view": "View",
+    "loadMore": "Load More",
+    "loading": "Loading...",
+    "total": "{{count}} records total"
+  },
+  "batch": {
+    "title": "Batch Conversion Progress",
+    "progress": "{{completed}}/{{total}} completed",
+    "failed": "{{count}} failed",
+    "complete": "All completed",
+    "processing": "Processing..."
+  },
+  "format": {
+    "pdf": "PDF",
+    "docx": "Word",
+    "xlsx": "Excel",
+    "pptx": "PPT",
+    "html": "HTML",
+    "image": "Image",
+    "audio": "Audio",
+    "csv": "CSV",
+    "json": "JSON",
+    "xml": "XML",
+    "zip": "ZIP",
+    "unknown": "Unknown"
+  },
+  "common": {
+    "loading": "Loading...",
+    "error": "Something went wrong",
+    "retry": "Retry",
+    "cancel": "Cancel",
+    "confirm": "Confirm",
+    "close": "Close",
+    "bytes": "B",
+    "kb": "KB",
+    "mb": "MB"
+  }
+}
